@@ -1,6 +1,5 @@
 ####
 # AWS::VPC - Create VPC 
-# Right Now Private Subnet Creation is not supported by AWS Module.
 ####
 
 class aws::vpc (
