@@ -1,0 +1,111 @@
+---
+aws_vpc::vpcdetails:
+    vpcname: "example"
+    ensure: present
+    cidr_block: "10.20.0.0/16"
+    region: "us-east-1" 
+    domainname: "example.in"
+    domainname-servers: "AmazonProvidedDNS"
+    sg-cidr: "0.0.0.0/0"
+    public-subnets: 
+        public-us-east-1b:
+            cidr_block: "10.20.2.0/24"
+            availability_zone: "us-east-1b"
+            route_table: "public_example"
+            map_public_ip_on_launch: "true"
+        public-us-east-1c:
+            cidr_block: "10.20.3.0/24"
+            availability_zone: "us-east-1c"
+            route_table: "public_example"
+            map_public_ip_on_launch: "true"
+        public-us-east-1d:
+            cidr_block: "10.20.4.0/24"
+            availability_zone: "us-east-1d"
+            route_table: "public_example"
+            map_public_ip_on_launch: "true"
+        public-us-east-1e:
+            cidr_block: "10.20.5.0/24"
+            availability_zone: "us-east-1e"
+            route_table: "public_example"
+            map_public_ip_on_launch: "true"
+    private-subnets:
+        private-us-east-1b:
+            cidr_block: "10.20.22.0/24"
+            availability_zone: "us-east-1b"
+            route_table: "private_example"
+    loadbalancers:
+        test-elb:
+            ensure: "present"
+            region: "us-east-1"
+            scheme: "internet-facing"
+            availability_zones:
+                - "us-east-1c"
+                - "us-east-1b"
+                - "us-east-1e"
+                - "us-east-1d"
+            instances:
+                - "web-testing1"
+            security_groups:
+                - "default"
+                - "sg_example"
+            listeners:
+                instance_port: 80
+                instance_protocol: "HTTP"
+                load_balancer_port: 80
+                protocol: "HTTP"
+            tags:
+                created_by: "puppet"
+        test-internal-elb:
+            ensure: "present"
+            region: "us-east-1"
+            scheme: "internal"
+            availability_zones:
+                - "us-east-1c"
+                - "us-east-1b"
+                - "us-east-1e"
+                - "us-east-1d"
+            instances:
+                - "web-testing1"
+            security_groups:
+                - "default"
+                - "sg_example"
+            listeners:
+                instance_port: 80
+                instance_protocol: "HTTP"
+                load_balancer_port: 80
+                protocol: "HTTP"
+            tags:
+                created_by: "puppet"
+    instances:
+        nat-instance:
+            ensure: running
+            availability_zone: "us-east-1c"
+            region: "us-east-1"
+            image_id: "ami-184dc970"
+            instance_type: "t2.micro"
+            monitoring: true
+            key_name: "example"
+            security_groups: 
+                - "sg-example"
+            tags:
+                created_by: puppet
+        web-testing1:
+            ensure: running
+            availability_zone: "us-east-1b"
+            subnet: "public-us-east-1b"
+            region: "us-east-1"
+            image_id: "ami-aa776ec2"
+            instance_type: "t2.micro"
+            monitoring: false
+            key_name: "example"
+            security_groups:
+                - "sg_example"
+            tags:
+                created_by: puppet
+    route53:
+        domaintesting.example.in.:
+            ensure: present
+            ttl: '300'
+            values:
+                - 'internal-test-150873479.us-east-1.elb.amazonaws.com'
+            zone: 'example.in.'
