@@ -75,28 +75,28 @@ web-testing1:
 
 ~~~
 loadbalancers:
-    test-elb:
-        ensure: "present"
-        region: "us-east-1"
-        scheme: "internet-facing"
-        availability_zones:
-            - "us-east-1c"
-            - "us-east-1b"
-            - "us-east-1e"
-            - "us-east-1d"
-        instances:
-            - "web-testing1"
-        security_groups:
-            - "default"
-            - "sg_example"
-        listeners:
-            instance_port: 80
-            instance_protocol: "HTTP"
-            load_balancer_port: 80
-            protocol: "HTTP"
-        tags:
-            created_by: puppet
-~~~
+        test1-elb:
+            ensure: 'present'
+            region: 'us-east-1'
+            scheme: 'internet-facing'
+            subnets:
+                - 'public-us-east-1c'
+                - 'public-us-east-1b'
+                - 'public-us-east-1e'
+                - 'public-us-east-1d'
+            instances:
+                - 'www-fpm'
+            security_groups:
+                - 'default'
+                - 'sg_example'
+            listeners:
+                - 
+                    instance_port: 80
+                    instance_protocol: 'HTTP'
+                    load_balancer_port: 80
+                    protocol: 'HTTP'
+            tags:
+                created_by: 'puppet'
 
 **Creating a Route53 Entry:**
 ~~~
